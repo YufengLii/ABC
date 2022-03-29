@@ -2,8 +2,20 @@ from csv import reader
 from script.k_nearest_neighbor import get_neighbors, get_mean_distances, get_mean_points
 from script.enclosing_angles import get_enclosing_angle, get_enclosing_angles, get_border_degree_and_point
 
-k = 3
-beta = 50
+k = 5
+beta = 500
+
+
+def get_key(item):
+    return item[2]
+
+
+def extract_border_points(border_degree_point):
+    border_points = []
+    border_degree_point.sort(key=get_key, reverse=True)
+    for i in range(beta):
+        border_points.append([border_degree_point[i][0], border_degree_point[i][1]])
+    print(border_points)
 
 
 def compute_border_degree(rows, enc_angles_mean_knn):
@@ -55,7 +67,7 @@ def read_dataset(path):
         # ea = compute_enclosing_angles(rows, knn)
         eam = compute_enclosing_angles_mean_knn(rows, mp, knn)
         bdp = compute_border_degree(rows, eam)
-        print(bdp)
+        extract_border_points(bdp)
 
 
 if __name__ == '__main__':

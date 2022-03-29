@@ -41,5 +41,5 @@ def get_enclosing_angles(point, mean_point, knn, k):
 
 
 def get_border_degree_and_point(row, enc_angles):
-    enc_angles.sort(reverse=True)
-    return [[row[0], row[1]], enc_angles[0]]
+    enc_angles.sort()
+    return [row[0], row[1], enc_angles[0]]

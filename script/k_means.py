@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-raw_data = make_blobs(n_samples=500, n_features=2, centers=5, cluster_std=1.8)
+raw_data = make_blobs(n_samples=5000, n_features=2, centers=5, cluster_std=1.8)
 # print(raw_data)
 
 _class = []
@@ -26,7 +26,7 @@ for line in raw_data:
 
 data = []
 for i in range(len(_class) - 1):
-    data.append([_x[i], _y[i], _class[i]])
+    data.append([_x[i], _y[i]])  # , _class[i]])
 
 df = pd.DataFrame(data)
 df.to_csv('../dataset/dataset.csv', index=False)
