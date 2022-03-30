@@ -15,16 +15,11 @@ def get_directional_angle(x, y, z):
 def get_enclosing_angle(point, knn, k):
     dir_angles_point = []
     for j in range(k):
-        if j + 1 <= k - 1:
-            # 0, 1 - 1, 2
-            dir_angles_point.append(
-                get_directional_angle([float(point[0]), float(point[1])], [float(knn[j][0]), float(knn[j][1])],
-                                      [float(knn[j + 1][0]), float(knn[j + 1][1])]))
-        else:
-            # 0, 2
-            dir_angles_point.append(get_directional_angle([float(point[0]), float(point[1])],
-                                                          [float(knn[j - (k - 1)][0]), float(knn[j - (k - 1)][1])],
-                                                          [float(knn[j][0]), float(knn[j][1])]))
+        for g in reversed(range(k)):
+            if j != g and g <= k - 1:
+                dir_angles_point.append(get_directional_angle([float(point[0]), float(point[1])], [float(knn[j][0]), float(knn[j][1])], [float(knn[g][0]), float(knn[g][1])]))
+            else:
+                break
     min_dir_angle = min(dir_angles_point)
     index_min_dir_angle = dir_angles_point.index(min(dir_angles_point))
     enc_angle_point = 360 - min_dir_angle
@@ -37,6 +32,8 @@ def get_enclosing_angles(point, mean_point, knn, k):
         dir_angle_point = (get_directional_angle([float(point[0]), float(point[1])], [float(mean_point[0]), float(mean_point[1])], [float(knn[j][0]), float(knn[j][1])]))
         enc_angle_point = 360 - dir_angle_point
         enc_angles_point.append(enc_angle_point)
+    print(enc_angles_point)
+    print()
     return enc_angles_point
 
 
