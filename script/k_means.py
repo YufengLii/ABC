@@ -29,7 +29,7 @@ for i in range(len(_class) - 1):
     data.append([_x[i], _y[i]])  # , _class[i]])
 
 df = pd.DataFrame(data)
-df.to_csv('../dataset/dataset.csv', index=False)
+df.to_csv('../dataset/old_dataset.csv', index=False)
 print(df)
 
 # plt.scatter(raw_data[0][:, 0], raw_data[0][:, 1], c=raw_data[1])

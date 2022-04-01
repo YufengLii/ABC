@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 
-raw_data = pd.read_csv('../dataset/dataset.csv')
+raw_data = pd.read_csv('../dataset/old_dataset.csv')
 # print(raw_data.columns)
 
 scaler = StandardScaler()

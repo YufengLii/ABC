@@ -5,8 +5,9 @@ from sklearn.cluster import KMeans
 from script.k_nearest_neighbor import get_neighbors, get_mean_distances, get_mean_points
 from script.enclosing_angles import get_enclosing_angle, get_enclosing_angles, get_border_degree_and_point
 
-k = 5
-beta = 200
+# 3000 samples
+k = 10
+beta = 300
 
 
 def plot_results(rows, bp):
@@ -28,7 +29,7 @@ def plot_results(rows, bp):
     ax[0].legend()
     ax[0].grid(True)
 
-    model = KMeans(n_clusters=5)
+    model = KMeans(n_clusters=k)
     model.fit(rows)
     ax[1].scatter(x, y, c=model.labels_)
 
@@ -98,7 +99,7 @@ def read_dataset(path):
         eam = compute_enclosing_angles_mean_knn(rows, mp, knn)
         bdp = compute_border_degree(rows, eam)
         bp = extract_border_points(bdp)
-        # plot_results(rows, bp)
+        plot_results(rows, bp)
 
 
 if __name__ == '__main__':
