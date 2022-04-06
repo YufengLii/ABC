@@ -5,9 +5,9 @@ from sklearn.cluster import KMeans
 from script.k_nearest_neighbor import get_neighbors, get_mean_distances, get_mean_points
 from script.enclosing_angles import get_enclosing_angle, get_enclosing_angles, get_border_degree_and_point
 
-# 3000 samples
-k = 10
-beta = 300
+# 1000 samples, k = 5
+k = 5
+beta = 50
 
 
 def plot_results(rows, bp):
@@ -42,9 +42,16 @@ def get_key(item):
 
 def extract_border_points(border_degree_point):
     border_points = []
-    border_degree_point.sort(key=get_key, reverse=True)
-    for i in range(beta):
-        border_points.append([border_degree_point[i][0], border_degree_point[i][1]])
+    # print(border_degree_point)
+    # print()
+    # border_degree_point.sort(key=get_key, reverse=True)
+    # print(border_degree_point)
+    if len(border_degree_point) < beta:
+        for i in range(len(border_degree_point)):
+            border_points.append([border_degree_point[i][0], border_degree_point[i][1]])
+    else:
+        for i in range(beta):
+            border_points.append([border_degree_point[i][0], border_degree_point[i][1]])
     # print(border_points)
     return border_points
 
@@ -52,7 +59,8 @@ def extract_border_points(border_degree_point):
 def compute_border_degree(rows, enc_angles_mean_knn):
     border_degree_point = []
     for i in range(len(rows)):
-        border_degree_point.append(get_border_degree_and_point(rows[i], enc_angles_mean_knn[i]))
+        if get_border_degree_and_point(rows[i], enc_angles_mean_knn[i]) is not None:
+            border_degree_point.append(get_border_degree_and_point(rows[i], enc_angles_mean_knn[i]))
     return border_degree_point
 
 
@@ -103,4 +111,4 @@ def read_dataset(path):
 
 
 if __name__ == '__main__':
-    read_dataset('dataset/dataset.csv')
+    read_dataset('dataset/dataset_v2.csv')

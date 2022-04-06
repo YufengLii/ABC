@@ -14,6 +14,7 @@ def get_neighbors(train, test_row, num_neighbors):
         distance = euclidean_distance(test_row, train_row)
         distances.append((train_row, distance))
     distances.sort(key=lambda tup: tup[1])
+    distances = list(filter(lambda x: x[1] != 0.0, distances))
     neighbors = list()
     for i in range(num_neighbors):
         neighbors.append(distances[i][0])
