@@ -17,6 +17,7 @@ def get_neighbors(train, test_row, num_neighbors):
     distances = list(filter(lambda x: x[1] != 0.0, distances))
     neighbors = list()
     for i in range(num_neighbors):
+        # print(distances[i][0])
         neighbors.append(distances[i][0])
     return neighbors
 

@@ -8,6 +8,33 @@ from script.enclosing_angles import get_enclosing_angle, get_enclosing_angles, g
 # 1000 samples, k = 5
 k = 5
 beta = 50
+n = 1000
+factor = beta * n
+
+
+def plot_knn(rows, row, knn):
+    x_all = []
+    y_all = []
+    for rw in rows:
+        x_all.append(float(rw[0]))
+        y_all.append(float(rw[1]))
+    plt.scatter(x_all, y_all, c='red', label='all', marker=".")
+
+    x = [float(row[0])]
+    y = [float(row[1])]
+    # print(float(x), float(y))
+    plt.scatter(x, y, c='blue', label='center', marker=".")
+
+    x_knn = []
+    y_knn = []
+    for point in knn:
+        x_knn.append(float(point[0]))
+        y_knn.append(float(point[1]))
+    plt.scatter(x_knn, y_knn, c='orange', label='knn', marker=".")
+    plt.legend()
+    plt.grid(True)
+
+    plt.show()
 
 
 def plot_results(rows, bp):
@@ -46,7 +73,7 @@ def extract_border_points(border_degree_point):
     # print()
     # border_degree_point.sort(key=get_key, reverse=True)
     # print(border_degree_point)
-    if len(border_degree_point) < beta:
+    if len(border_degree_point) < factor:
         for i in range(len(border_degree_point)):
             border_points.append([border_degree_point[i][0], border_degree_point[i][1]])
     else:
@@ -61,6 +88,7 @@ def compute_border_degree(rows, enc_angles_mean_knn):
     for i in range(len(rows)):
         if get_border_degree_and_point(rows[i], enc_angles_mean_knn[i]) is not None:
             border_degree_point.append(get_border_degree_and_point(rows[i], enc_angles_mean_knn[i]))
+    # print(border_degree_point)
     return border_degree_point
 
 
@@ -90,7 +118,12 @@ def compute_mean_distance(rows, knn):
 def compute_knn(rows):
     nearest_neighbors = []
     for r in rows:
-        nearest_neighbors.append(get_neighbors(rows, r, k))
+        # print(r)
+        neigh = get_neighbors(rows, r, k)
+        # print(neigh)
+        # print()
+        plot_knn(rows, r, neigh)
+        nearest_neighbors.append(neigh)
     return nearest_neighbors
 
 
