@@ -1,9 +1,15 @@
 from csv import reader
+import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 from sklearn.cluster import KMeans
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
 
 from script.k_nearest_neighbor import get_neighbors, get_mean_distances, get_mean_points
 from script.enclosing_angles import get_enclosing_angle, get_enclosing_angles, get_border_degree_and_point
+
+cmap = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
 # 1000 samples, k = 5
 k = 5
@@ -18,19 +24,19 @@ def plot_knn(rows, row, knn):
     for rw in rows:
         x_all.append(float(rw[0]))
         y_all.append(float(rw[1]))
-    plt.scatter(x_all, y_all, c='red', label='all', marker=".")
+    plt.scatter(x_all, y_all, c='red', label='all', marker="o")
 
     x = [float(row[0])]
     y = [float(row[1])]
     # print(float(x), float(y))
-    plt.scatter(x, y, c='blue', label='center', marker=".")
+    plt.scatter(x, y, c='blue', label='center', marker="o")
 
     x_knn = []
     y_knn = []
     for point in knn:
         x_knn.append(float(point[0]))
         y_knn.append(float(point[1]))
-    plt.scatter(x_knn, y_knn, c='orange', label='knn', marker=".")
+    plt.scatter(x_knn, y_knn, c='orange', label='knn', marker="o")
     plt.legend()
     plt.grid(True)
 
@@ -122,7 +128,7 @@ def compute_knn(rows):
         neigh = get_neighbors(rows, r, k)
         # print(neigh)
         # print()
-        plot_knn(rows, r, neigh)
+        # plot_knn(rows, r, neigh)
         nearest_neighbors.append(neigh)
     return nearest_neighbors
 
@@ -143,5 +149,25 @@ def read_dataset(path):
         plot_results(rows, bp)
 
 
+def trial_iris_dataset():
+    iris = datasets.load_iris()
+    X, y = iris.data, iris.target
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+
+    # plt.figure()
+    # plt.scatter(X[:, 2], X[:, 3], c=y, cmap=cmap, edgecolors='k', s=20)
+    # plt.show()
+
+    clf = KNN(k=5)
+    clf.fit(X_train, y_train)
+    predictions = clf.predict(X_test)
+
+    acc = np.sum(predictions == y_test) / len(y_test)
+    print(acc)
+
+
 if __name__ == '__main__':
     read_dataset('dataset/dataset_v2.csv')
+    # trial_iris_dataset()
+

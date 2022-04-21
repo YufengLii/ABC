@@ -1,17 +1,20 @@
 from math import sqrt, dist
+import numpy as np
+from collections import Counter
 
 
 def euclidean_distance(r1, r2):
-    distance = 0.0
-    for i in range(len(r1) - 1):
-        distance += (int(float(r1[i])) - int(float(r2[i]))) ** 2
-    return sqrt(distance)
+    # distance = 0.0
+    # for i in range(len(r1) - 1):
+    #     distance += (int(float(r1[i])) - int(float(r2[i]))) ** 2
+    # return sqrt(distance)
+    return np.sqrt(np.sum((r1 - r2) ** 2))
 
 
 def get_neighbors(train, test_row, num_neighbors):
     distances = list()
     for train_row in train:
-        distance = euclidean_distance(test_row, train_row)
+        distance = euclidean_distance(np.asarray(test_row).astype(int), np.asarray(train_row).astype(int))
         distances.append((train_row, distance))
     distances.sort(key=lambda tup: tup[1])
     distances = list(filter(lambda x: x[1] != 0.0, distances))
@@ -50,3 +53,30 @@ def get_mean_points(knn):
         y = y / len(nn)
         mean_points.append([x, y])
     return mean_points
+
+
+# class KNN:
+#     def __init__(self, k=3):
+#         self.X_train = None
+#         self.y_train = None
+#         self.k = k
+#
+#     # X training samples, y training labels
+#     def fit(self, X, y):
+#         self.X_train = X
+#         self.y_train = y
+#
+#     # X test samples
+#     def predict(self, X):
+#         predicted_labels = [self._predict(x) for x in X]
+#         return np.array(predicted_labels)
+#
+#     def _predict(self, x):
+#         # compute distances
+#         distances = [euclidean_distance(x, x_train) for x_train in self.X_train]
+#         # get k nearest samples, labels
+#         k_indices = np.argsort(distances)[:self.k]
+#         k_nearest_labels = [self.y_train[i] for i in k_indices]
+#         # majority vote, get the most common class label
+#         most_common = Counter(k_nearest_labels).most_common(1)
+#         return most_common[0][0]
