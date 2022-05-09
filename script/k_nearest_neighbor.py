@@ -1,13 +1,8 @@
 from math import sqrt, dist
 import numpy as np
-from collections import Counter
 
 
 def euclidean_distance(r1, r2):
-    # distance = 0.0
-    # for i in range(len(r1) - 1):
-    #     distance += (int(float(r1[i])) - int(float(r2[i]))) ** 2
-    # return sqrt(distance)
     return np.sqrt(np.sum((r1 - r2) ** 2))
 
 
@@ -49,9 +44,9 @@ def get_mean_points(knn):
         for i in range(len(nn)):
             x += float(nn[i][0])
             y += float(nn[i][1])
-        x = x / len(nn)
-        y = y / len(nn)
-        mean_points.append([x, y])
+        mean_x = x / len(nn)
+        mean_y = y / len(nn)
+        mean_points.append([mean_x, mean_y])
     return mean_points
 
 

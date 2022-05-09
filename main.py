@@ -18,29 +18,35 @@ n = 1000
 factor = beta * n
 
 
-def plot_knn(rows, row, knn):
+def plot_knn_and_mean_points(rows, knn, mp):
     x_all = []
     y_all = []
     for rw in rows:
         x_all.append(float(rw[0]))
         y_all.append(float(rw[1]))
-    plt.scatter(x_all, y_all, c='red', label='all', marker="o")
 
-    x = [float(row[0])]
-    y = [float(row[1])]
-    # print(float(x), float(y))
-    plt.scatter(x, y, c='blue', label='center', marker="o")
+    for i in range(len(rows)):
+        plt.scatter(x_all, y_all, c='red', label='all', marker="o")
 
-    x_knn = []
-    y_knn = []
-    for point in knn:
-        x_knn.append(float(point[0]))
-        y_knn.append(float(point[1]))
-    plt.scatter(x_knn, y_knn, c='orange', label='knn', marker="o")
-    plt.legend()
-    plt.grid(True)
+        x = [float(rows[i][0])]
+        y = [float(rows[i][1])]
+        plt.scatter(x, y, c='blue', label='center', marker="o")
 
-    plt.show()
+        x_knn = []
+        y_knn = []
+        for point in knn[i]:
+            x_knn.append(float(point[0]))
+            y_knn.append(float(point[1]))
+        plt.scatter(x_knn, y_knn, c='orange', label='knn', marker="o")
+
+        x_mp = [float(mp[i][0])]
+        y_mp = [float(mp[i][1])]
+        plt.scatter(x_mp, y_mp, c='black', label='mp', marker="o")
+
+        plt.legend()
+        plt.grid(True)
+
+        plt.show()
 
 
 def plot_results(rows, bp):
@@ -144,27 +150,28 @@ def read_dataset(path):
         mp = compute_mean_points(knn)
         # ea = compute_enclosing_angles(rows, knn)
         eam = compute_enclosing_angles_mean_knn(rows, mp, knn)
+        # plot_knn_and_mean_points(rows, knn, mp)
         bdp = compute_border_degree(rows, eam)
         bp = extract_border_points(bdp)
         plot_results(rows, bp)
 
 
-def trial_iris_dataset():
-    iris = datasets.load_iris()
-    X, y = iris.data, iris.target
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
-
-    # plt.figure()
-    # plt.scatter(X[:, 2], X[:, 3], c=y, cmap=cmap, edgecolors='k', s=20)
-    # plt.show()
-
-    clf = KNN(k=5)
-    clf.fit(X_train, y_train)
-    predictions = clf.predict(X_test)
-
-    acc = np.sum(predictions == y_test) / len(y_test)
-    print(acc)
+# def trial_iris_dataset():
+#     iris = datasets.load_iris()
+#     X, y = iris.data, iris.target
+#
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+#
+#     # plt.figure()
+#     # plt.scatter(X[:, 2], X[:, 3], c=y, cmap=cmap, edgecolors='k', s=20)
+#     # plt.show()
+#
+#     clf = KNN(k=5)
+#     clf.fit(X_train, y_train)
+#     predictions = clf.predict(X_test)
+#
+#     acc = np.sum(predictions == y_test) / len(y_test)
+#     print(acc)
 
 
 if __name__ == '__main__':
