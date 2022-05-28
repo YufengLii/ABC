@@ -18,6 +18,29 @@ n = 1000
 factor = beta * n
 
 
+def plot_enclosing_angle(row, mean_point, knn, angle):
+    x = [float(row[0])]
+    y = [float(row[1])]
+    plt.scatter(x, y, c='blue', label='center', marker="o")
+
+    x_mp = [float(mean_point[0])]
+    y_mp = [float(mean_point[1])]
+    plt.scatter(x_mp, y_mp, c='black', label='mean point', marker="o")
+
+    x_knn = []
+    y_knn = []
+    for index, point in enumerate(knn):
+        # x_knn.append(float(point[0]))
+        # y_knn.append(float(point[1]))
+        plt.scatter(float(point[0]), float(point[1]), c='orange', label='knn', marker="o")
+        plt.text(float(point[0]), float(point[1]), index)
+
+    plt.legend()
+    plt.grid(True)
+
+    plt.show()
+
+
 def plot_knn_and_mean_points(rows, knn, mp):
     x_all = []
     y_all = []
@@ -115,7 +138,9 @@ def compute_enclosing_angles(rows, knn):
 def compute_enclosing_angles_mean_knn(rows, mp, knn):
     enc_angles = []
     for i in range(len(rows)):
-        enc_angles.append(get_enclosing_angles(rows[i], mp[i], knn[i], k))
+        enc_angle = get_enclosing_angles(rows[i], mp[i], knn[i], k)
+        enc_angles.append(enc_angle)
+        # plot_enclosing_angle(rows[i], mp[i], knn[i], enc_angle)
     return enc_angles
 
 

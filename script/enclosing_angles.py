@@ -2,14 +2,17 @@ from math import atan2, degrees
 
 
 def get_enc_angle(x, y, z):
+    # print(f"x: {x}, y: {y}, z: {z}")
     u1, u2 = y[0] - x[0], y[1] - x[1]  # xy coordinates
     v1, v2 = z[0] - x[0], z[1] - x[1]  # xz coordinates
     enclosing_angle = atan2(u2, u1) - atan2(v2, v1)
     deg_enclosing_angle = degrees(enclosing_angle)
     if deg_enclosing_angle < 0:
-        return 360 - (deg_enclosing_angle + 360)
+        # print(f"angle: {deg_enclosing_angle + 360}")
+        return deg_enclosing_angle + 360
     else:
-        return 360 - deg_enclosing_angle
+        # print(f"angle: {deg_enclosing_angle}")
+        return deg_enclosing_angle
 
 
 def get_enclosing_angle(point, knn, k):
