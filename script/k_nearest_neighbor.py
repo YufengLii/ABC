@@ -1,4 +1,4 @@
-from math import sqrt, dist
+from math import dist
 import numpy as np
 
 
@@ -6,16 +6,15 @@ def euclidean_distance(r1, r2):
     return np.sqrt(np.sum((r1 - r2) ** 2))
 
 
-def get_neighbors(train, test_row, num_neighbors):
+def get_neighbors(points, current_point, num_neighbors):
     distances = list()
-    for train_row in train:
-        distance = euclidean_distance(np.asarray(test_row).astype(int), np.asarray(train_row).astype(int))
-        distances.append((train_row, distance))
+    for point in points:
+        distance = euclidean_distance(np.asarray(current_point).astype(int), np.asarray(point).astype(int))
+        distances.append((point, distance))
     distances.sort(key=lambda tup: tup[1])
     distances = list(filter(lambda x: x[1] != 0.0, distances))
     neighbors = list()
     for i in range(num_neighbors):
-        # print(distances[i][0])
         neighbors.append(distances[i][0])
     return neighbors
 
@@ -39,14 +38,10 @@ def get_mean_distances(rows, knn, k):
 def get_mean_points(knn):
     mean_points = []
     for nn in knn:
-        x = 0
-        y = 0
-        for i in range(len(nn)):
-            x += float(nn[i][0])
-            y += float(nn[i][1])
-        mean_x = x / len(nn)
-        mean_y = y / len(nn)
-        mean_points.append([mean_x, mean_y])
+        for n in nn:
+            n[0] = float(n[0])
+            n[1] = float(n[1])
+        mean_points.append(np.mean(nn, axis=0))
     return mean_points
 
 

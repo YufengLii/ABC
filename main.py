@@ -1,24 +1,30 @@
 from csv import reader
-import numpy as np
+
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
 from sklearn.cluster import KMeans
-from sklearn import datasets
-from sklearn.model_selection import train_test_split
 
-from script.k_nearest_neighbor import get_neighbors, get_mean_distances, get_mean_points
-from script.enclosing_angles import get_enclosing_angle, get_enclosing_angles, get_border_degree_and_point
+from script.enclosing_angles import get_enclosing_angle_and_border_degree, get_border_point, get_border_points, get_directional_angles
+from script.k_nearest_neighbor import get_neighbors, get_mean_points
 
-cmap = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
+# cmap = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
-# 1000 samples, k = 5
+# 1000 samples, k = 5 ### v2
+# 6500 samples, k = 8 ### v3
+# 500 samples, k = 5 ### v3 half
 k = 5
-beta = 50
-n = 1000
+beta = 0.1
+n = 500
 factor = beta * n
 
 
-def plot_enclosing_angle(row, mean_point, knn, angle):
+def plot_directional_angle(rows, row, mean_point, knn, angles):
+    x_all = []
+    y_all = []
+    for rw in rows:
+        x_all.append(float(rw[0]))
+        y_all.append(float(rw[1]))
+    plt.scatter(x_all, y_all, c='red', label='all', marker="o")
+
     x = [float(row[0])]
     y = [float(row[1])]
     plt.scatter(x, y, c='blue', label='center', marker="o")
@@ -27,13 +33,22 @@ def plot_enclosing_angle(row, mean_point, knn, angle):
     y_mp = [float(mean_point[1])]
     plt.scatter(x_mp, y_mp, c='black', label='mean point', marker="o")
 
-    x_knn = []
-    y_knn = []
     for index, point in enumerate(knn):
-        # x_knn.append(float(point[0]))
-        # y_knn.append(float(point[1]))
         plt.scatter(float(point[0]), float(point[1]), c='orange', label='knn', marker="o")
         plt.text(float(point[0]), float(point[1]), index)
+
+    print(f"directional angles: {angles}\n")
+
+    dir_angles = [float(angle) for angle in angles]
+
+    tmp_angles = []
+    for angle in dir_angles:
+        if angle >= 180:
+            tmp_angles.append(angle)
+
+    enc_angle = 360 - min(tmp_angles)
+
+    print(f"enclosing angle: {enc_angle}\n\n")
 
     plt.legend()
     plt.grid(True)
@@ -99,67 +114,64 @@ def plot_results(rows, bp):
 
 
 def get_key(item):
-    return item[2]
+    return item[3]
 
 
 def extract_border_points(border_degree_point):
+    print(f"factor: {factor}")
     border_points = []
-    # print(border_degree_point)
-    # print()
-    # border_degree_point.sort(key=get_key, reverse=True)
-    # print(border_degree_point)
-    if len(border_degree_point) < factor:
-        for i in range(len(border_degree_point)):
-            border_points.append([border_degree_point[i][0], border_degree_point[i][1]])
-    else:
-        for i in range(beta):
-            border_points.append([border_degree_point[i][0], border_degree_point[i][1]])
-    # print(border_points)
+    border_degree_point.sort(key=get_key, reverse=True)
+    i = 0
+    while i <= factor:
+        for bdp in border_degree_point:
+            print(f"i: {i}")
+            print(f"border degree point: {bdp}")
+            border_points.append([bdp[0], bdp[1]])
+        i += 1
     return border_points
 
 
-def compute_border_degree(rows, enc_angles_mean_knn):
-    border_degree_point = []
+def compute_border_points(enc_angles_mean_knn):
+    border_points = get_border_point(enc_angles_mean_knn)
+    return border_points
+
+
+def compute_enclosing_angles_and_border_degree(directional_angles):
+    enc_angles_border_degree = []
+    for da in directional_angles:
+        enc_angles_border_degree.append(get_enclosing_angle_and_border_degree(da[0], da[1], da[2]))
+    return enc_angles_border_degree
+
+
+def compute_directional_angles_mean_knn(rows, mp, knn):
+    dir_angles = []
     for i in range(len(rows)):
-        if get_border_degree_and_point(rows[i], enc_angles_mean_knn[i]) is not None:
-            border_degree_point.append(get_border_degree_and_point(rows[i], enc_angles_mean_knn[i]))
-    # print(border_degree_point)
-    return border_degree_point
+        dir_angle = get_directional_angles(rows[i], mp[i], knn[i], k)
+        dir_angles.append([rows[i][0], rows[i][1], dir_angle])
+        # plot_directional_angle(rows, rows[i], mp[i], knn[i], dir_angle)
+    return dir_angles
 
 
-def compute_enclosing_angles(rows, knn):
-    enc_angles = []
-    for i in range(len(rows)):
-        _index, enc_angle = get_enclosing_angle(rows[i], knn[i], k)
-        enc_angles.append([_index, enc_angle])
-    return enc_angles
+# def compute_enclosing_angles_knn(rows, knn):
+#     enc_angles = []
+#     for i in range(len(rows)):
+#         curr_x, curr_y, x1, y1, x2, y2, angle = get_enclosing_angles_knn(rows[i], knn[i])
+#         enc_angles.append([curr_x, curr_y, x1, y1, x2, y2, angle])
+#     return enc_angles
 
 
-def compute_enclosing_angles_mean_knn(rows, mp, knn):
-    enc_angles = []
-    for i in range(len(rows)):
-        enc_angle = get_enclosing_angles(rows[i], mp[i], knn[i], k)
-        enc_angles.append(enc_angle)
-        # plot_enclosing_angle(rows[i], mp[i], knn[i], enc_angle)
-    return enc_angles
+def find_border_points(enc_angles_points, mean_points):
+    return get_border_points(enc_angles_points, mean_points)
 
 
 def compute_mean_points(knn):
     return get_mean_points(knn)
 
 
-def compute_mean_distance(rows, knn):
-    return get_mean_distances(rows, knn, k)
-
-
 def compute_knn(rows):
     nearest_neighbors = []
     for r in rows:
-        # print(r)
         neigh = get_neighbors(rows, r, k)
-        # print(neigh)
-        # print()
-        # plot_knn(rows, r, neigh)
         nearest_neighbors.append(neigh)
     return nearest_neighbors
 
@@ -171,12 +183,14 @@ def read_dataset(path):
         for row in csv_reader:
             rows.append(row)
         knn = compute_knn(rows)
-        # md = compute_mean_distance(rows, knn)
         mp = compute_mean_points(knn)
-        # ea = compute_enclosing_angles(rows, knn)
-        eam = compute_enclosing_angles_mean_knn(rows, mp, knn)
-        # plot_knn_and_mean_points(rows, knn, mp)
-        bdp = compute_border_degree(rows, eam)
+        # eak = compute_enclosing_angles_knn(rows, knn)
+        # bp = find_border_points(eak, mp)
+        # plot_results(rows, bp)
+        # exit(0)
+        dam = compute_directional_angles_mean_knn(rows, mp, knn)
+        ea = compute_enclosing_angles_and_border_degree(dam)
+        bdp = compute_border_points(ea)
         bp = extract_border_points(bdp)
         plot_results(rows, bp)
 
@@ -200,6 +214,5 @@ def read_dataset(path):
 
 
 if __name__ == '__main__':
-    read_dataset('dataset/dataset_v2.csv')
+    read_dataset('dataset/dataset_v3_half.csv')
     # trial_iris_dataset()
-
