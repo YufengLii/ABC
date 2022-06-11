@@ -9,10 +9,10 @@ from script.k_nearest_neighbor import get_neighbors, get_mean_points
 # cmap = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
 # 1000 samples, k = 5 ### v2
-# 6500 samples, k = 8 ### v3
+# 6000 samples, k = 3 ### v3
 # 500 samples, k = 5 ### v3 half
-k = 5
-beta = 0.1
+k = 10
+beta = 0.2
 n = 500
 factor = beta * n
 
@@ -37,7 +37,7 @@ def plot_directional_angle(rows, row, mean_point, knn, angles):
         plt.scatter(float(point[0]), float(point[1]), c='orange', label='knn', marker="o")
         plt.text(float(point[0]), float(point[1]), index)
 
-    print(f"directional angles: {angles}\n")
+    print(f"\n\ndirectional angles: {angles}")
 
     dir_angles = [float(angle) for angle in angles]
 
@@ -48,7 +48,11 @@ def plot_directional_angle(rows, row, mean_point, knn, angles):
 
     enc_angle = 360 - min(tmp_angles)
 
-    print(f"enclosing angle: {enc_angle}\n\n")
+    print(f"enclosing angle: {enc_angle}")
+
+    border_degree = 360 - min(dir_angles)
+
+    print(f"border degree: {border_degree}")
 
     plt.legend()
     plt.grid(True)
@@ -118,14 +122,13 @@ def get_key(item):
 
 
 def extract_border_points(border_degree_point):
-    print(f"factor: {factor}")
+    # print(f"factor: {factor}")
     border_points = []
     border_degree_point.sort(key=get_key, reverse=True)
+
     i = 0
     while i <= factor:
         for bdp in border_degree_point:
-            print(f"i: {i}")
-            print(f"border degree point: {bdp}")
             border_points.append([bdp[0], bdp[1]])
         i += 1
     return border_points

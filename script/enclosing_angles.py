@@ -105,12 +105,14 @@ def get_border_points(angles_points, mean_points):
 
 
 def get_border_point(enc_angles_point):
+    # for point in enc_angles_point:
+        # print(f"point + angles: {point}\n\n")
     enc_angles = []
     for enc_angle in enc_angles_point:
         enc_angles.append(enc_angle[2])
     border_point_angle = []
     angles = [float(angle) for angle in enc_angles]
     for i in range(len(angles)):
-        if angles[i] < 45:
+        if angles[i] < 50:
             border_point_angle.append([enc_angles_point[i][0], enc_angles_point[i][1], angles[i], enc_angles_point[i][3]])
     return border_point_angle
