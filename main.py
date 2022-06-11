@@ -5,6 +5,7 @@ from sklearn.cluster import KMeans
 
 from script.enclosing_angles import get_enclosing_angle_and_border_degree, get_border_point, get_border_points, get_directional_angles
 from script.k_nearest_neighbor import get_neighbors, get_mean_points
+from script.dbscan_modified import get_direction
 
 # cmap = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
 
@@ -14,7 +15,7 @@ from script.k_nearest_neighbor import get_neighbors, get_mean_points
 k = 10
 beta = 0.2
 n = 500
-factor = beta * n
+factor = int(beta * n)
 
 
 def plot_directional_angle(rows, row, mean_point, knn, angles):
@@ -117,6 +118,17 @@ def plot_results(rows, bp):
     plt.show()
 
 
+def compute_directions_border_points(rows, mean_points, border_points):
+    directions_points = []
+    for bp in border_points:
+        for index, row in enumerate(rows):
+            if bp[0] == row[0] and bp[1] == row[1]:
+                directions_points.append(get_direction(bp[0], bp[1],
+                                                       mean_points[index][0],
+                                                       mean_points[index][1]))
+    return directions_points
+
+
 def get_key(item):
     return item[3]
 
@@ -125,12 +137,10 @@ def extract_border_points(border_degree_point):
     # print(f"factor: {factor}")
     border_points = []
     border_degree_point.sort(key=get_key, reverse=True)
+    del border_degree_point[factor:]
 
-    i = 0
-    while i <= factor:
-        for bdp in border_degree_point:
-            border_points.append([bdp[0], bdp[1]])
-        i += 1
+    for bdp in border_degree_point:
+        border_points.append([bdp[0], bdp[1]])
     return border_points
 
 
@@ -196,7 +206,7 @@ def read_dataset(path):
         bdp = compute_border_points(ea)
         bp = extract_border_points(bdp)
         plot_results(rows, bp)
-
+        dp = compute_directions_border_points(rows, mp, bp)
 
 # def trial_iris_dataset():
 #     iris = datasets.load_iris()
