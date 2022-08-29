@@ -18,6 +18,7 @@ k = 12
 beta = 0.2
 n = 500
 factor = int(beta * n)
+f = open("results.txt", "w")
 
 
 def plot_directional_angle(rows, row, mean_point, knn, angles):
@@ -270,22 +271,48 @@ def read_dataset(path):
     with open(path, 'r') as dataset:
         csv_reader = reader(dataset)
         rows = []
+        f.write('Points:\n')
         for row in csv_reader:
             rows.append(row)
+            f.write(str(row) + '\n')
+        f.write('\n\nKNN:\n')
         knn = compute_knn(rows)
+        for single_knn in knn:
+            f.write(str(single_knn) + '\n')
+        f.write('\n\nMean Points:\n')
         mean_points = compute_mean_points(knn)
+        for mean_point in mean_points:
+            f.write(str(mean_point) + '\n')
         # eak = compute_enclosing_angles_knn(rows, knn)
         # bp = find_border_points(eak, mp)
         # plot_results(rows, bp)
         # exit(0)
+        f.write('\n\nDirectional Angles of Mean Point:\n')
         directional_angles_mean = compute_directional_angles_mean_knn(rows, mean_points, knn)
+        for directional_angle_mean in directional_angles_mean:
+            f.write(str(directional_angle_mean) + '\n')
+        f.write('\n\nEnclosing Angles:\n')
         enclosing_angles = compute_enclosing_angles_and_border_degree(directional_angles_mean)
+        for enclosing_angle in enclosing_angles:
+            f.write(str(enclosing_angle) + '\n')
+        f.write('\n\nAll Border Points:\n')
         border_points_all = compute_border_points(enclosing_angles)
+        for border_point_all in border_points_all:
+            f.write(str(border_point_all) + '\n')
+        f.write('\n\nBorder Points:\n')
         border_points = extract_border_points(border_points_all)
+        for border_point in border_points:
+            f.write(str(border_point) + '\n')
         # plot_results(rows, border_points)
+        f.write('\n\nLabels:\n')
         labels = dbscan(border_points, 18000, 3)
+        for label in labels:
+            f.write(str(label) + '\n')
         # plot_clusters(rows, border_points, labels)
+        f.write('\n\nPoint Labels:\n')
         points_labels = assign_non_border_points_to_cluster(rows, border_points, labels)
+        for point_labels in points_labels:
+            f.write(str(point_labels) + '\n')
         plot_final_clusters(points_labels, border_points, labels)
 
 
