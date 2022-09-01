@@ -16,6 +16,9 @@
 #define M_PI 3.14159265358979323846
 #endif // M_PI
 
+// MISCELLANEOUS
+void printErrorAllocation();
+
 // KNN methods
 float euclideanDistance(int x1, int y1, int x2, int y2);
 void sortArrayDistances(float **distancesPoints);
