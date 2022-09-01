@@ -38,10 +38,17 @@ float euclideanDistance(int x1, int y1, int x2, int y2) {
 }
 
 void sortArrayDistances(float **distancesPoints) {
+	float *tmp;
+
+	tmp = calloc(3, sizeof(float));
+	if (tmp == NULL) {
+		printErrorAllocation();
+	}
+
 	for (int i = 0; i < N-1; i++) {
 		for (int j = i + 1; j < N; j++) {
 			if (distancesPoints[i][2] > distancesPoints[j][2]) {
-				float *tmp = distancesPoints[i];
+				tmp = distancesPoints[i];
 				distancesPoints[i] = distancesPoints[j];
 				distancesPoints[j] = tmp;
 			}
@@ -173,10 +180,16 @@ int isBorderPoint(float enclosingAngle) {
 }
 
 void sortArrayBorderDegrees(float **borderDegrees, int sizeArray) {
+	float *tmp;
+	tmp = calloc(3, sizeof(float));
+	if (tmp == NULL) {
+		printErrorAllocation();
+	}
+
 	for (int i = 0; i < sizeArray-1; i++) {
 			for (int j = i + 1; j < sizeArray; j++) {
 				if (borderDegrees[i][2] < borderDegrees[j][2]) {
-					float *tmp = borderDegrees[i];
+					tmp = borderDegrees[i];
 					borderDegrees[i] = borderDegrees[j];
 					borderDegrees[j] = tmp;
 				}
