@@ -54,6 +54,8 @@ void sortArrayDistances(float **distancesPoints) {
 			}
 		}
 	}
+
+	free(tmp);
 }
 
 // non permette di ritornare un array, ma si può ritornare il puntatore all'array specificandone il nome senza indice
@@ -187,14 +189,16 @@ void sortArrayBorderDegrees(float **borderDegrees, int sizeArray) {
 	}
 
 	for (int i = 0; i < sizeArray-1; i++) {
-			for (int j = i + 1; j < sizeArray; j++) {
-				if (borderDegrees[i][2] < borderDegrees[j][2]) {
-					tmp = borderDegrees[i];
-					borderDegrees[i] = borderDegrees[j];
-					borderDegrees[j] = tmp;
-				}
+		for (int j = i + 1; j < sizeArray; j++) {
+			if (borderDegrees[i][2] < borderDegrees[j][2]) {
+				tmp = borderDegrees[i];
+				borderDegrees[i] = borderDegrees[j];
+				borderDegrees[j] = tmp;
 			}
 		}
+	}
+
+	free(tmp);
 }
 
 void getBorderPoints(float **borderPointsAll, int sizeArray, int **borderPoints, int factor) {

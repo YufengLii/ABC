@@ -71,6 +71,18 @@ int main(void) {
 		printErrorAllocation();
 	}
 
+	ptrBorderPointsAll = calloc(counter, sizeof(float *));
+	if (ptrBorderPointsAll == NULL) {
+		printErrorAllocation();
+	} else {
+		for (i = 0; i < counter; i++) {
+			ptrBorderPointsAll[i] = calloc(3, sizeof(float));
+			if (ptrBorderPointsAll[i] == NULL) {
+				printErrorAllocation();
+			}
+		}
+	}
+
 	ptrBorderPoints = calloc(factor, sizeof(int *));
 	if (ptrBorderPoints == NULL) {
 		printErrorAllocation();
@@ -118,18 +130,6 @@ int main(void) {
 		// finds size of border points array
 		if (isBorderPoint(ptrEnclosingAnglesPoint[i]) == 1) {
 			++counter;
-		}
-	}
-
-	ptrBorderPointsAll = calloc(counter, sizeof(float *));
-	if (ptrBorderPointsAll == NULL) {
-		printErrorAllocation();
-	} else {
-		for (i = 0; i < counter; i++) {
-			ptrBorderPointsAll[i] = calloc(3, sizeof(float));
-			if (ptrBorderPointsAll[i] == NULL) {
-				printErrorAllocation();
-			}
 		}
 	}
 
