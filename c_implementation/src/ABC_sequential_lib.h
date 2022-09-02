@@ -30,8 +30,8 @@ int findSize(float *directionalAngles);
 float getEnclosingAngle(float *directionalAngles);
 float getBorderDegree(float *directionalAngles);
 int isBorderPoint(float enclosingAngle);
-void sortArrayBorderDegrees(float *borderDegrees, int sizeArray);
-void getBorderPoints(float **borderPointsAll, int sizeArray, int **borderPoints, int factor);
+void sortArrayBorderDegrees(float *borderDegrees);
+void getBorderPoints(float **borderPointsAll, int sizeArray, int **borderPoints);
 
 // DBSCAN
 int scalarProduct(int aX, int aY, int bX, int bY);

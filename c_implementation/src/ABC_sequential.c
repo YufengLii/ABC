@@ -13,11 +13,14 @@
 #include <math.h>
 #include "ABC_sequential_lib.h"
 
+
+// int factor = (int) beta * n;
+
 int main(void) {
 	// puts("Angle Based Clustering Program - Sequential");
 	FILE *file = fopen("../data/dataset_v3_half.csv", "r");
 	FILE *output = fopen("../results/results.txt", "w");
-	int i, j, g, x, y, counter = 0, counterBis = 0, factor = BETA * N;
+	int i, j, g, x, y, counter = 0, factor = BETA * N;
 	int **ptrPoints, **ptrKnnPoint, **ptrBorderPoints, *ptrLabels;
 	float *ptrMeanPoint, *ptrDirectionalAnglesPoint, *ptrEnclosingAnglesPoint, *ptrBorderDegreesPoint, **ptrBorderPointsAll;
 
@@ -71,11 +74,11 @@ int main(void) {
 		printErrorAllocation();
 	}
 
-	ptrBorderPointsAll = calloc(counter, sizeof(float *));
+	ptrBorderPointsAll = calloc(N, sizeof(float *));
 	if (ptrBorderPointsAll == NULL) {
 		printErrorAllocation();
 	} else {
-		for (i = 0; i < counter; i++) {
+		for (i = 0; i < N; i++) {
 			ptrBorderPointsAll[i] = calloc(3, sizeof(float));
 			if (ptrBorderPointsAll[i] == NULL) {
 				printErrorAllocation();
@@ -123,23 +126,12 @@ int main(void) {
 			ptrDirectionalAnglesPoint[j] = getDirectionalAngle(ptrPoints[i], ptrMeanPoint, ptrKnnPoint[j]);
 		}
 
-		// finds the enclosing angle for each point and the border degree
-		ptrEnclosingAnglesPoint[i] = getEnclosingAngle(ptrDirectionalAnglesPoint);
-		ptrBorderDegreesPoint[i] = getBorderDegree(ptrDirectionalAnglesPoint);
-
-		// finds size of border points array
-		if (isBorderPoint(ptrEnclosingAnglesPoint[i]) == 1) {
+		// finds the border points with enclosing angle for each point and border degree
+		if (isBorderPoint(getEnclosingAngle(ptrDirectionalAnglesPoint)) == 1) {
+			ptrBorderPointsAll[counter][0] = ptrPoints[i][0];
+			ptrBorderPointsAll[counter][1] = ptrPoints[i][1];
+			ptrBorderPointsAll[counter][2] = getBorderDegree(ptrDirectionalAnglesPoint);
 			++counter;
-		}
-	}
-
-	for (i = 0; i < N; i++) {
-		// finds all border points
-		if (isBorderPoint(ptrEnclosingAnglesPoint[i]) == 1) {
-			ptrBorderPointsAll[counterBis][0] = ptrPoints[i][0];
-			ptrBorderPointsAll[counterBis][1] = ptrPoints[i][1];
-			ptrBorderPointsAll[counterBis][2] = ptrBorderDegreesPoint[i];
-			counterBis++;
 		}
 	}
 
@@ -151,8 +143,12 @@ int main(void) {
 	free(ptrDirectionalAnglesPoint);
 
 	// get factor border points
-	getBorderPoints(ptrBorderPointsAll, counter, ptrBorderPoints, factor);
+	getBorderPoints(ptrBorderPointsAll, counter, ptrBorderPoints);
 	free(ptrBorderPointsAll);
+
+	if (counter < factor) {
+		factor = counter;
+	}
 
 	// get label for each border point
 	getLabelsBorderPoints(ptrBorderPoints, factor, 18000, 3, ptrLabels);

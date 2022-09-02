@@ -38,24 +38,23 @@ float euclideanDistance(int x1, int y1, int x2, int y2) {
 }
 
 void sortArrayDistances(float **distancesPoints) {
-	float *tmp;
-
-	tmp = calloc(3, sizeof(float));
-	if (tmp == NULL) {
-		printErrorAllocation();
-	}
+	float tmp[3];
 
 	for (int i = 0; i < N-1; i++) {
 		for (int j = i + 1; j < N; j++) {
 			if (distancesPoints[i][2] > distancesPoints[j][2]) {
-				tmp = distancesPoints[i];
-				distancesPoints[i] = distancesPoints[j];
-				distancesPoints[j] = tmp;
+				tmp[0] = distancesPoints[i][0];
+				tmp[1] = distancesPoints[i][1];
+				tmp[2] = distancesPoints[i][2];
+				distancesPoints[i][0] = distancesPoints[j][0];
+				distancesPoints[j][0] = tmp[0];
+				distancesPoints[i][1] = distancesPoints[j][1];
+				distancesPoints[j][1] = tmp[1];
+				distancesPoints[i][2] = distancesPoints[j][2];
+				distancesPoints[j][2] = tmp[2];
 			}
 		}
 	}
-
-	free(tmp);
 }
 
 // non permette di ritornare un array, ma si può ritornare il puntatore all'array specificandone il nome senza indice
@@ -181,29 +180,29 @@ int isBorderPoint(float enclosingAngle) {
 	}
 }
 
-void sortArrayBorderDegrees(float **borderDegrees, int sizeArray) {
-	float *tmp;
-	tmp = calloc(3, sizeof(float));
-	if (tmp == NULL) {
-		printErrorAllocation();
-	}
+void sortArrayBorderDegrees(float **borderDegrees) {
+	float tmp[3];
 
-	for (int i = 0; i < sizeArray-1; i++) {
-		for (int j = i + 1; j < sizeArray; j++) {
+	for (int i = 0; i < N-1; i++) {
+		for (int j = i + 1; j < N; j++) {
 			if (borderDegrees[i][2] < borderDegrees[j][2]) {
-				tmp = borderDegrees[i];
-				borderDegrees[i] = borderDegrees[j];
-				borderDegrees[j] = tmp;
+				tmp[0] = borderDegrees[i][0];
+				tmp[1] = borderDegrees[i][1];
+				tmp[2] = borderDegrees[i][2];
+				borderDegrees[i][0] = borderDegrees[j][0];
+				borderDegrees[j][0] = tmp[0];
+				borderDegrees[i][1] = borderDegrees[j][1];
+				borderDegrees[j][1] = tmp[1];
+				borderDegrees[i][2] = borderDegrees[j][2];
+				borderDegrees[j][2] = tmp[2];
 			}
 		}
 	}
-
-	free(tmp);
 }
 
-void getBorderPoints(float **borderPointsAll, int sizeArray, int **borderPoints, int factor) {
-	sortArrayBorderDegrees(borderPointsAll, sizeArray);
-	for (int i = 0; i < factor; i++) {
+void getBorderPoints(float **borderPointsAll, int sizeArray, int **borderPoints) {
+	sortArrayBorderDegrees(borderPointsAll);
+	for (int i = 0; i < sizeArray; i++) {
 		borderPoints[i][0] = borderPointsAll[i][0];
 		borderPoints[i][1] = borderPointsAll[i][1];
 	}
