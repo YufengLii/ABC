@@ -34,9 +34,7 @@ void sortArrayBorderDegrees(float *borderDegrees);
 void getBorderPoints(float **borderPointsAll, int sizeArray, int **borderPoints);
 
 // DBSCAN
-int scalarProduct(int aX, int aY, int bX, int bY);
 float moduleVector(int x, int y);
-float angleBetweenVectors(int aX, int aY, int bX, int bY);
 float directionAngleModifiedDistanceFunction(int aX, int aY, int bX, int bY);
 int regionQuery(int **borderPoints, int **neighbors, int factor, int x, int y, int epsilon);
 void growCluster(int **borderPoints, int factor, int *labels, int index, int x, int y, int **neighbors, int lenNeighbors, int clusterId, int epsilon, int minNumberPoints);

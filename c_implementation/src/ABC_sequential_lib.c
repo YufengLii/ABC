@@ -211,21 +211,23 @@ void getBorderPoints(float **borderPointsAll, int sizeArray, int **borderPoints)
 
 // DBSCAN
 
-int scalarProduct(int aX, int aY, int bX, int bY) {
-	return aX * bX + aY * bY;
-}
-
 float moduleVector(int x, int y) {
+	// printf("module vector : %0.8f\n", sqrt(pow(x, 2) + pow(y, 2)));
 	return sqrt(pow(x, 2) + pow(y, 2));
 }
 
-float angleBetweenVectors(int aX, int aY, int bX, int bY) {
-	return scalarProduct(aX, aY, bX, bY) / (moduleVector(aX, aY) * moduleVector(bX, bY));
-}
-
 float directionAngleModifiedDistanceFunction(int aX, int aY, int bX, int bY) {
+	double product = 0.00;
+	float angleBetweenVectors = 0.00;
 	// printf("distance is : %0.2f\n", euclideanDistance(aX, aY, bX, bY) * (1 + ((0.5 - 1) / M_PI) * angleBetweenVectors(aX, aY, bX, bY)));
-	return euclideanDistance(aX, aY, bX, bY) * (1 + ((0.5 - 1) / M_PI) * angleBetweenVectors(aX, aY, bX, bY));
+	// printf("euclidean distance : %0.2f\n", euclideanDistance(aX, aY, bX, bY));
+	product = (double) aX * (double) bX + (double) aY * (double) bY;
+	//printf("scalar product : %f\n", product);
+
+	angleBetweenVectors = product / (moduleVector(aX, aY) * moduleVector(bX, bY));
+	// printf("angle between vectors : %0.8f\n", angleBetweenVectors);
+
+	return euclideanDistance(aX, aY, bX, bY) * (1 + ((0.5 - 1) / M_PI) * angleBetweenVectors);
 }
 
 int regionQuery(int **borderPoints, int **neighbors, int factor, int x, int y, int epsilon) {
@@ -233,16 +235,15 @@ int regionQuery(int **borderPoints, int **neighbors, int factor, int x, int y, i
 	int counter = 0;
 	for (int i = 0; i < factor; i++) {
 		float disComputed = directionAngleModifiedDistanceFunction(x, y, borderPoints[i][0], borderPoints[i][1]);
-		if (x != borderPoints[i][0] && y != borderPoints[i][1]) {
-			if (disComputed < epsilon && disComputed != 0.00) {
-				/*printf("distance < epsilon\n");
-				printf("x : %d\n", borderPoints[i][0]);
-				printf("y : %d\n", borderPoints[i][1]);*/
-				neighbors[counter][0] = i;
-				neighbors[counter][1] = borderPoints[i][0];
-				neighbors[counter][2] = borderPoints[i][1];
-				++counter;
-			}
+		printf("distance computed : %0.2f\n", disComputed);
+		if (disComputed < epsilon) { // && disComputed != 0.00) {
+			/*printf("distance < epsilon\n");
+			printf("x : %d\n", borderPoints[i][0]);
+			printf("y : %d\n", borderPoints[i][1]);*/
+			neighbors[counter][0] = i;
+			neighbors[counter][1] = borderPoints[i][0];
+			neighbors[counter][2] = borderPoints[i][1];
+			++counter;
 		}
 	}
 	return counter;
