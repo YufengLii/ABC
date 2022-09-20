@@ -62,7 +62,6 @@ def dbscan(dataset, eps, min_pts):
     # For each point P in the Dataset D...
     # ('P' is the index of the datapoint, rather than the datapoint itself.)
     for point in range(0, len(dataset)):
-
         # Only points that have not already been claimed can be picked as new
         # seed points.
         # If the point's label is not 0, continue to the next point.
@@ -101,7 +100,7 @@ def grow_cluster(dataset, labels, point, neighbor_pts, cluster_id, eps, min_pts)
       `D`      - The dataset (a list of vectors)
       `labels` - List storing the cluster labels for all dataset points
       `P`      - Index of the seed point for this new cluster
-      `NeighborPts` - All of the neighbors of `P`
+      `NeighborPts` - All the neighbors of `P`
       `C`      - The label for this new cluster.
       `eps`    - Threshold distance
       `MinPts` - Minimum required number of neighbors
@@ -118,7 +117,6 @@ def grow_cluster(dataset, labels, point, neighbor_pts, cluster_id, eps, min_pts)
     # dataset.
     i = 0
     while i < len(neighbor_pts):
-
         # Get the next point from the queue.
         next_point = neighbor_pts[i]
 
@@ -140,6 +138,7 @@ def grow_cluster(dataset, labels, point, neighbor_pts, cluster_id, eps, min_pts)
             # Add all of its neighbors to the FIFO queue to be searched.
             if len(next_point_neighbor_pts) >= min_pts:
                 neighbor_pts = neighbor_pts + next_point_neighbor_pts
+                neighbor_pts = list(dict.fromkeys(neighbor_pts))
             # If Pn *doesn't* have enough neighbors, then it's a leaf point.
             # Don't queue up it's neighbors as expansion points.
             # else:
@@ -164,7 +163,6 @@ def region_query(dataset, point, eps):
 
     # For each point in the dataset...
     for next_point in range(0, len(dataset)):
-
         # If the distance is below the threshold, add it to the neighbors list.
         # if np.linalg.norm(dataset[point] - dataset[next_point]) < eps:
         if direction_angle_modified_distance_function(dataset[point], dataset[next_point]) < eps:
