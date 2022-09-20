@@ -39,3 +39,9 @@ float directionAngleModifiedDistanceFunction(int aX, int aY, int bX, int bY);
 int regionQuery(int **borderPoints, int **neighbors, int factor, int x, int y, int epsilon);
 void growCluster(int **borderPoints, int factor, int *labels, int index, int x, int y, int **neighbors, int lenNeighbors, int clusterId, int epsilon, int minNumberPoints);
 void getLabelsBorderPoints(int **borderPoints, int factor, int epsilon, int minNumberPoints, int *labels);
+
+// CLUSTER
+int checkIfBorderPoint(int **borderPoints, int factor, int x, int y);
+void getNonBorderPoints(int **points, int **borderPoints, int factor, int **nonBorderPoints);
+float findMinimumDistance(float **distances, int factor);
+void getLabelsNonBorderPoints(int **borderPoints, int factor, int *labels, int **nonBorderPoints, int otherFactor, int *nonBorderLabels);

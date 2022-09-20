@@ -20,8 +20,8 @@ int main(void) {
 	// puts("Angle Based Clustering Program - Sequential");
 	FILE *file = fopen("../data/dataset_v3_half.csv", "r");
 	FILE *output = fopen("../results/results.txt", "w");
-	int i, j, g, x, y, counter = 0, factor = BETA * N;
-	int **ptrPoints, **ptrKnnPoint, **ptrBorderPoints, *ptrLabels;
+	int i, j, g, x, y, counter = 0, factor = BETA * N, otherFactor;
+	int **ptrPoints, **ptrKnnPoint, **ptrBorderPoints, *ptrLabels, **ptrNonBorderPoints, *ptrNonBorderLabels;
 	float *ptrMeanPoint, *ptrDirectionalAnglesPoint, *ptrEnclosingAnglesPoint, *ptrBorderDegreesPoint, **ptrBorderPointsAll;
 
 	if (file == NULL || output == NULL) {
@@ -91,7 +91,7 @@ int main(void) {
 		printErrorAllocation();
 	} else {
 		for (i = 0; i < factor; i++) {
-			ptrBorderPoints[i] = calloc(2, sizeof(float));
+			ptrBorderPoints[i] = calloc(2, sizeof(int));
 			if (ptrBorderPoints[i] == NULL) {
 				printErrorAllocation();
 			}
@@ -135,7 +135,6 @@ int main(void) {
 		}
 	}
 
-	free(ptrPoints);
 	free(ptrEnclosingAnglesPoint);
 	free(ptrBorderDegreesPoint);
 	free(ptrKnnPoint);
@@ -152,13 +151,33 @@ int main(void) {
 
 	// get label for each border point
 	getLabelsBorderPoints(ptrBorderPoints, factor, 18000, 3, ptrLabels);
-	free(ptrBorderPoints);
 
-	for (i = 0; i < factor; i++) {
-		printf("label %d : %d\n", i, ptrLabels[i]);
+	otherFactor = N - factor;
+	ptrNonBorderPoints = calloc(otherFactor, sizeof(int *));
+	if (ptrNonBorderPoints == NULL) {
+		printErrorAllocation();
+	} else {
+		for (i = 0; i < otherFactor; i++) {
+			ptrNonBorderPoints[i] = calloc(2, sizeof(int));
+			if (ptrNonBorderPoints[i] == NULL) {
+				printErrorAllocation();
+			}
+		}
 	}
 
+	ptrNonBorderLabels = calloc(otherFactor, sizeof(int));
+	if (ptrNonBorderLabels == NULL) {
+		printErrorAllocation();
+	}
+
+	getNonBorderPoints(ptrPoints, ptrBorderPoints, factor, ptrNonBorderPoints);
+	free(ptrPoints);
+
+	getLabelsNonBorderPoints(ptrBorderPoints, factor, ptrLabels, ptrNonBorderPoints, otherFactor, ptrNonBorderLabels);
+	free(ptrBorderPoints);
 	free(ptrLabels);
+	free(ptrNonBorderPoints);
+	free(ptrNonBorderLabels);
 	fclose(output);
 	return 0;
 }

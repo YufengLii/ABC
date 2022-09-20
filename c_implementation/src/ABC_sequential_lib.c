@@ -212,34 +212,22 @@ void getBorderPoints(float **borderPointsAll, int sizeArray, int **borderPoints)
 // DBSCAN
 
 float moduleVector(int x, int y) {
-	// printf("module vector : %0.8f\n", sqrt(pow(x, 2) + pow(y, 2)));
 	return sqrt(pow(x, 2) + pow(y, 2));
 }
 
 float directionAngleModifiedDistanceFunction(int aX, int aY, int bX, int bY) {
 	double product = 0.00;
 	float angleBetweenVectors = 0.00;
-	// printf("distance is : %0.2f\n", euclideanDistance(aX, aY, bX, bY) * (1 + ((0.5 - 1) / M_PI) * angleBetweenVectors(aX, aY, bX, bY)));
-	// printf("euclidean distance : %0.2f\n", euclideanDistance(aX, aY, bX, bY));
 	product = (double) aX * (double) bX + (double) aY * (double) bY;
-	//printf("scalar product : %f\n", product);
-
 	angleBetweenVectors = product / (moduleVector(aX, aY) * moduleVector(bX, bY));
-	// printf("angle between vectors : %0.8f\n", angleBetweenVectors);
-
 	return euclideanDistance(aX, aY, bX, bY) * (1 + ((0.5 - 1) / M_PI) * angleBetweenVectors);
 }
 
 int regionQuery(int **borderPoints, int **neighbors, int factor, int x, int y, int epsilon) {
-	// printf("region query\n");
 	int counter = 0;
 	for (int i = 0; i < factor; i++) {
 		float disComputed = directionAngleModifiedDistanceFunction(x, y, borderPoints[i][0], borderPoints[i][1]);
-		printf("distance computed : %0.2f\n", disComputed);
-		if (disComputed < epsilon) { // && disComputed != 0.00) {
-			/*printf("distance < epsilon\n");
-			printf("x : %d\n", borderPoints[i][0]);
-			printf("y : %d\n", borderPoints[i][1]);*/
+		if (disComputed < epsilon) {
 			neighbors[counter][0] = i;
 			neighbors[counter][1] = borderPoints[i][0];
 			neighbors[counter][2] = borderPoints[i][1];
@@ -253,13 +241,6 @@ int checkIfAlreadyNeighbor(int **neighbors, int lenNeighbors, int *index) {
 	int flag = 0;
 	for (int i = 0; i < lenNeighbors; i++) {
 		if (neighbors[i][0] >= 0) {
-			/*printf("index neighbor (i : %d) : %d\n", i, neighbors[i][0]);
-			printf("index : %d\n", index[0]);
-			printf("x neighbor (i : %d) : %d\n", i, neighbors[i][1]);
-			printf("x : %d\n", index[1]);
-			printf("y neighbor (i : %d) : %d\n", i, neighbors[i][2]);
-			printf("y : %d\n\n", index[2]);*/
-			// if ((neighbors[i][0] == index[0]) || (neighbors[i][1] == index[1] && neighbors[i][2] == index[2])) {
 			if (neighbors[i][1] == index[1] && neighbors[i][2] == index[2]) {
 				flag = 1;
 				break;
@@ -271,7 +252,7 @@ int checkIfAlreadyNeighbor(int **neighbors, int lenNeighbors, int *index) {
 
 void growCluster(int **borderPoints, int factor, int *labels, int index, int x, int y, int **neighbors, int lenNeighbors, int clusterId, int epsilon, int minNumberPoints) {
 	labels[index] = clusterId;
-	int counter = 0, i, j;
+	int counter = 0, i, j, neighborsIncrement;
 	int **ptrNextNeighbors;
 
 	ptrNextNeighbors = calloc(factor, sizeof(int *));
@@ -287,42 +268,34 @@ void growCluster(int **borderPoints, int factor, int *labels, int index, int x, 
 	}
 
 	while (counter < lenNeighbors) {
-		if (lenNeighbors <= factor) {
-			printf("%d counter : %d\n", index, counter);
-			int lenNextNeighbors = 0;
+		int lenNextNeighbors = 0;
+		if (counter != 0) {
 			for (j = 0; j < factor; j++) {
-				ptrNextNeighbors[j][0] = -1;
+				ptrNextNeighbors[j][0] = 0;
 				ptrNextNeighbors[j][1] = 0;
 				ptrNextNeighbors[j][2] = 0;
 			}
-			int next_index = neighbors[counter][0];
-			printf("\tnext index : %d\n", next_index);
-			if (next_index != -1) {
-				if (labels[next_index] == -1) {
-					labels[next_index] = clusterId;
-				} else if (labels[next_index] == 0) {
-					labels[next_index] = clusterId;
-					lenNextNeighbors = regionQuery(borderPoints, ptrNextNeighbors, factor, borderPoints[next_index][0], borderPoints[next_index][1], epsilon);
-					if (lenNextNeighbors >= minNumberPoints) {
-						for (i = 0; i < lenNextNeighbors; i++) {
-							if (lenNeighbors + i >= factor) {
-								break;
-							}
-							if (checkIfAlreadyNeighbor(neighbors, lenNeighbors, ptrNextNeighbors[i]) == 0) {
-								neighbors[lenNeighbors + i][0] = i;
-								neighbors[lenNeighbors + i][1] = ptrNextNeighbors[i][1];
-								neighbors[lenNeighbors + i][2] = ptrNextNeighbors[i][2];
-								++lenNeighbors;
-								printf("\t\tlen neighbors updated : %d\n\n", lenNeighbors);
-							}
-						}
+		}
+		int next_index = neighbors[counter][0];
+		if (labels[next_index] == -1) {
+			labels[next_index] = clusterId;
+		} else if (labels[next_index] == 0) {
+			labels[next_index] = clusterId;
+			lenNextNeighbors = regionQuery(borderPoints, ptrNextNeighbors, factor, borderPoints[next_index][0], borderPoints[next_index][1], epsilon);
+			if (lenNextNeighbors >= minNumberPoints) {
+				neighborsIncrement = 0;
+				for (i = 0; i < lenNextNeighbors; i++) {
+					if (checkIfAlreadyNeighbor(neighbors, lenNeighbors, ptrNextNeighbors[i]) == 0) {
+						neighbors[lenNeighbors + neighborsIncrement][0] = ptrNextNeighbors[i][0];
+						neighbors[lenNeighbors + neighborsIncrement][1] = ptrNextNeighbors[i][1];
+						neighbors[lenNeighbors + neighborsIncrement][2] = ptrNextNeighbors[i][2];
+						++lenNeighbors;
+						++neighborsIncrement;
 					}
 				}
 			}
-		} else {
-			break;
 		}
-	++counter;
+		++counter;
 	}
 	free(ptrNextNeighbors);
 }
@@ -343,32 +316,105 @@ void getLabelsBorderPoints(int **borderPoints, int factor, int epsilon, int minN
 		}
 	}
 
-	printf("factor is %d\n", factor);
 	for (i = 0; i < factor; i++) {
-		printf("\t\t\t\t\tindex i : %d\n", i);
 		int lenNeighbors = 0;
-		for (j = 0; j < factor; j++) {
-			ptrNeighbors[j][0] = -1;
-			ptrNeighbors[j][1] = 0;
-			ptrNeighbors[j][2] = 0;
+		if (i != 0) {
+			for (j = 0; j < factor; j++) {
+				ptrNeighbors[j][0] = 0;
+				ptrNeighbors[j][1] = 0;
+				ptrNeighbors[j][2] = 0;
+			}
 		}
-		printf("\t\tcurrent label %d\n", labels[i]);
 		if (labels[i] == 0) {
 			lenNeighbors = regionQuery(borderPoints, ptrNeighbors, factor, borderPoints[i][0], borderPoints[i][1], epsilon);
-			/*printf("starting x : %d\n", borderPoints[i][0]);
-			printf("starting y : %d\n", borderPoints[i][1]);*/
-			printf("len neighbors %d\n", lenNeighbors);
 			if (lenNeighbors < minNumberPoints) {
-				printf("\t\toutsider\n");
 				labels[i] = -1;
 			} else {
-				printf("\t\tgrow cluster\n");
 				++clusterId;
-				printf("cluster id is : %d\n", clusterId);
 				growCluster(borderPoints, factor, labels, i, borderPoints[i][0], borderPoints[i][1], ptrNeighbors, lenNeighbors, clusterId, epsilon, minNumberPoints);
 			}
 		}
 	}
 
 	free(ptrNeighbors);
+}
+
+// CLUSTER
+
+int checkIfBorderPoint(int **borderPoints, int factor, int x, int y) {
+	for (int i = 0; i < factor; i++) {
+		if (borderPoints[i][0] == x && borderPoints[i][1] == y) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void getNonBorderPoints(int **points, int **borderPoints, int factor, int **nonBorderPoints) {
+	int counter = 0;
+	for (int i = 0; i < N; i++) {
+		if (checkIfBorderPoint(borderPoints, factor, points[i][0], points[i][1]) == 0) {
+			nonBorderPoints[counter][0] = points[i][0];
+			nonBorderPoints[counter][1] = points[i][1];
+			++counter;
+		}
+	}
+}
+
+float findMinimumDistance(float **distances, int factor) {
+	float minimumDistance = 0.0;
+	for (int i = 0; i < factor; i++) {
+		if (i == 0) {
+			minimumDistance = distances[i][0];
+		} else {
+			if (minimumDistance > distances[i][0] && distances[i][0] != 0.00) {
+				minimumDistance = distances[i][0];
+			}
+		}
+	}
+	return minimumDistance;
+}
+
+void getLabelsNonBorderPoints(int **borderPoints, int factor, int *labels, int **nonBorderPoints, int otherFactor, int *nonBorderLabels) {
+	float **distancesAndLabels, minDistance;
+	int labelMin;
+
+	distancesAndLabels = calloc(factor, sizeof(int *));
+	if (distancesAndLabels == NULL) {
+		printErrorAllocation();
+	} else {
+		for (int k = 0; k < factor; k++) {
+			distancesAndLabels[k] = calloc(2, sizeof(float));
+			if (distancesAndLabels[k] == NULL) {
+				printErrorAllocation();
+			}
+		}
+	}
+
+	for (int i = 0; i < otherFactor; i++) {
+		minDistance = 0.0;
+		labelMin = 0;
+		if (i != 0) {
+			for (int h = 0; h < factor; h++) {
+				distancesAndLabels[h][0] = 0;
+				distancesAndLabels[h][1] = 0;
+			}
+		}
+		for (int j = 0; j < factor; j++) {
+			if (labels[j] != -1) {
+				distancesAndLabels[j][0] = directionAngleModifiedDistanceFunction(nonBorderPoints[i][0], nonBorderPoints[i][1], borderPoints[j][0], borderPoints[j][1]);
+				distancesAndLabels[j][1] = labels[j];
+			}
+		}
+		minDistance = findMinimumDistance(distancesAndLabels, factor);
+		for (int k = 0; k < factor; k++) {
+			if ((minDistance == distancesAndLabels[k][0]) && (distancesAndLabels[k][1] != -1)) {
+				labelMin = distancesAndLabels[k][1];
+				break;
+			}
+		}
+		nonBorderLabels[i] = labelMin;
+	}
+
+	free(distancesAndLabels);
 }
