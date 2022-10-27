@@ -13,9 +13,6 @@
 #include <math.h>
 #include "ABC_sequential_lib.h"
 
-
-// int factor = (int) beta * n;
-
 int main(void) {
 	// puts("Angle Based Clustering Program - Sequential");
 	FILE *file = fopen("../data/dataset_v3_half.csv", "r");
