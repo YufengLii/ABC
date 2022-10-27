@@ -156,3 +156,5 @@ cython_debug/
 c_implementation/src/ABC_sequential
 c_implementation/src/ABC_sequential.dSYM/Contents/Info.plist
 c_implementation/src/ABC_sequential.dSYM/Contents/Resources/DWARF/ABC_sequential
+
+.vscode
